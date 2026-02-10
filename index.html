@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sentiment Analysis for Fake News Propagation</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Sentiment Analysis for Fake News Propagation</h1>
+    </header>
+
+    <main>
+      <label for="news-input" class="input-label">Enter your news article:</label>
+      <textarea id="news-input" placeholder="Paste the news article here..." rows="8"></textarea>
+
+      <button id="check-btn" aria-label="Check News">Check News</button>
+
+      <div class="result hidden" id="result">
+        <div>
+          <strong>News Status:</strong> <span id="news-status"></span>
+        </div>
+        <div>
+          <strong>Sentiment:</strong> <span id="sentiment"></span>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <small>© 2025 Sentiment Analysis for Fake News Propagation</small>
+    </footer>
+  </div>
+
+  <script>
+    const checkBtn = document.getElementById('check-btn');
+    const newsInput = document.getElementById('news-input');
+    const resultDiv = document.getElementById('result');
+    const newsStatusSpan = document.getElementById('news-status');
+    const sentimentSpan = document.getElementById('sentiment');
+
+    checkBtn.addEventListener('click', async () => {
+      const newsText = newsInput.value.trim();
+      if (!newsText) {
+        alert('Please enter a news article!');
+        return;
+      }
+
+      checkBtn.disabled = true;
+      checkBtn.textContent = 'Checking...';
+
+      try {
+        const response = await fetch('http://127.0.0.1:5000/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ news: newsText })
+        });
+
+        const data = await response.json();
+        newsStatusSpan.textContent = data.status;
+        sentimentSpan.textContent = data.sentiment;
+
+        resultDiv.classList.remove('hidden');
+        resultDiv.classList.add('fade-in');
+      } catch (err) {
+        alert('Failed to connect to backend.');
+        console.error(err);
+      }
+
+      checkBtn.disabled = false;
+      checkBtn.textContent = 'Check News';
+    });
+  </script>
+</body>
+</html>
